@@ -1,8 +1,15 @@
+# TODO:
+
+# add functionality to create custom queries 
+# this will read the object containing the flow log format columns, and create the query to be run
+
+# add functionality to check whether a partition already exists
+
+# add functionality to get query results printed
+
 import argparse
 import boto3
 from io import StringIO
-
-
 
 class StringBuilder:
     string = None
@@ -15,6 +22,38 @@ class StringBuilder:
         
     def __str__(self):
         return self.string.getvalue()
+    
+flow_log_format = {
+    "account_id"            : "string",
+    "action"                : "string",
+    "az_id"                 : "string",
+    "bytes"                 : "bigint",
+    "dstaddr"               : "string",
+    "dstport"               : "int",
+    "end"                   : "bigint",
+    "flow_direction"        : "string",
+    "instance_id"           : "string",
+    "interface_id"          : "string",
+    "log_status"            : "string",
+    "packets"               : "bigint",
+    "pkt_dst_aws_service"   : "string",
+    "pkt_dstaddr"           : "string",
+    "pkt_src_aws_service"   : "string",
+    "pkt_srcaddr"           : "string",
+    "protocol"              : "bigint",
+    "region"                : "string",
+    "srcaddr"               : "string",
+    "srcport"               : "int",
+    "start"                 : "bigint",
+    "sublocation_id"        : "string",
+    "sublocation_type"      : "string",
+    "subnet_id"             : "string",
+    "tcp_flags"             : "int",
+    "traffic_path"          : "int",
+    "type"                  : "string",
+    "version"               : "int",
+    "vpc_id"                : "string"
+}
 
 def createTable(table_name="vpc_flow_logs_6", flow_logs_bucket_location="s3://sapphire-vpc-flow-logs-834539731159/", query_output_bucket_location="s3://sapphire-vpc-flow-logs-athena-query-results-834539731159/", workgroup="primary"):
     
@@ -111,7 +150,6 @@ def runSampleQuery(table_name, date, query_output_bucket_location="s3://sapphire
 
     
 def main(account_id, date, region):
-    
     client = boto3.client('athena')
     createTable()
     createPartition("vpc_flow_logs_6", account_id, region, date)
@@ -133,3 +171,4 @@ def parser():
 if __name__ == "__main__":
     account_id, date, region = parser()
     main(account_id, date, region)
+    
