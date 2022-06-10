@@ -1,11 +1,3 @@
-# TODO:
-
-# add functionality to create custom queries 
-# this will read the object containing the flow log format columns, and create the query to be run
-
-# add functionality to check whether a partition already exists
-
-# add functionality to get query results printed
 
 import argparse
 import boto3
@@ -121,7 +113,7 @@ def createPartition(table_name, account_id, region, date, flow_logs_bucket_locat
     print(response)
     
 
-def runSampleQuery(table_name, date, query_output_bucket_location="s3://sapphire-vpc-flow-logs-athena-query-results-834539731159/", workgroup="primary"):
+def runQueryForAllFields(table_name, date, query_output_bucket_location="s3://sapphire-vpc-flow-logs-athena-query-results-834539731159/", workgroup="primary"):
     
     client = boto3.client('athena')
     
@@ -147,28 +139,94 @@ def runSampleQuery(table_name, date, query_output_bucket_location="s3://sapphire
         WorkGroup=workgroup
     )
     print(response)
-
     
-def main(account_id, date, region):
+def runCustomQuery(fields, table_name, date, query_output_bucket_location="s3://sapphire-vpc-flow-logs-athena-query-results-834539731159/", workgroup="primary"):
     client = boto3.client('athena')
-    createTable()
-    createPartition("vpc_flow_logs_6", account_id, region, date)
-    runSampleQuery("vpc_flow_logs_6", date)
+    
+    # assuming fields is a list of fields to be queried
+    query_fields_str = StringBuilder()
+    for field in fields:
+        query_fields_str.add(field)
+        if field == fields[-1]:
+            break
+        query_fields_str.add(", ")
+
+    query_str = StringBuilder()
+    query_str.add("SELECT ")
+    query_str.add(query_fields_str)
+    query_str.add(" FROM ")
+    query_str.add(table_name)
+    query_str.add(" WHERE date = DATE('")
+    query_str.add(date)
+    query_str.add("');")
+    
+    response = client.start_query_execution(
+        
+        QueryString=str(query_str),
+    
+        # if the below block is commented out, the table will be created in the default db...
+        # QueryExecutionContext={
+        #     'Database': 'wbc'
+        # },
+        
+        ResultConfiguration={
+            'OutputLocation': query_output_bucket_location,
+        },
+        WorkGroup=workgroup
+    )
+    print(response)
+    
+def runOnPremConnectionCheckQuery(table_name, date, query_output_bucket_location="s3://sapphire-vpc-flow-logs-athena-query-results-834539731159/", workgroup="primary"):
+    
+    client = boto3.client('athena')
+    
+    query_str = StringBuilder()
+    query_str.add("SELECT account_id, flow_direction, srcaddr FROM ")
+    query_str.add(table_name)
+    query_str.add(" WHERE date = DATE('")
+    query_str.add(date)
+    query_str.add("') AND flow_direction = 'ingress';")
+
+    response = client.start_query_execution(
+        
+        QueryString=str(query_str),
+    
+        # if the below block is commented out, the table will be created in the default db...
+        # QueryExecutionContext={
+        #     'Database': 'wbc'
+        # },
+        
+        ResultConfiguration={
+            'OutputLocation': query_output_bucket_location,
+        },
+        WorkGroup=workgroup
+    )
+    print(response)
+    
+def main(account_id, date, region, table):
+    client = boto3.client('athena')
+    
+    createTable(table)
+    createPartition(table, account_id, region, date)
+    runQueryForAllFields(table, date)
+    #runOnPremConnectionCheckQuery(table, date)
     
 def parser():
     parser = argparse.ArgumentParser(description=['Parsing arguments'])
     parser.add_argument('-a','--account-id', help='Target account id', nargs='?', dest="account_id")
     parser.add_argument('-d','--date', help='Date', nargs='?', dest="date")
     parser.add_argument('-r','--region', help='Target region', nargs='?', dest="region")
+    parser.add_argument('-t','--table', help='Target Athena table', nargs='?', dest="table")
     args = vars(parser.parse_args())
     
     account_id = args["account_id"]
     date = args["date"]
     region = args["region"]
+    table = args["table"]
 
-    return account_id, date, region
+    return account_id, date, region, table
 
 if __name__ == "__main__":
-    account_id, date, region = parser()
-    main(account_id, date, region)
+    account_id, date, region, table = parser()
+    main(account_id, date, region, table)
     
