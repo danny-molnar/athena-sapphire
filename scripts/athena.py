@@ -1,3 +1,11 @@
+# Athena deployment script
+
+# This script will:
+# - create an Athena table for the desired customer account in the specified region
+# - create a partition for a desired date
+# - create a query that lists all the VPC flow log fields 
+
+# Usage: $ python[3] athena.py -a ACCOUNT_NUMBER -d DATE{FORMAT: YYYY-MM-DD} -r REGION -t ATHENA_TABLE_NAME
 
 import argparse
 import boto3
