@@ -1,38 +1,18 @@
 ## README ##
 
-*Last update: 17/05/2022.*
+Last update: 13/06/2022
 
-This README contains my solution thoughts on Amazon Athena for Sapphire Systems.
-This README references files in the terraform folder.
+This repository contains the following:
 
-Referenced resources:
-https://docs.aws.amazon.com/athena/latest/ug/vpc-flow-logs.html
+- **scripts/athena.py:** this boto3 script deploys an Athena table, sets up a partition for a desired day and customer account, and creates SQL-like queries in Athena that can be viewed in the Athena console.
+Usage: 
+*$ python[3] athena.py -a ACCOUNT_NUMBER -d DATE{FORMAT: YYYY-MM-DD} -r REGION -t ATHENA_TABLE_NAME,*
+where
+  - ACCOUNT_NUMBER - the account number Athena will be using for VPC flow log quieries
+  - DATE - the date for the query, required format: YYYY-MM-DD
+  - REGION - the region in which the customer account has resources in
+  - ATHENA_TABLE_NAME - the name of the desired Athena table
 
+Once the script is run, the table then can be used for analysing VPC flow logs.
 
-### Pre-existing infrastructure
-
-In my lab account using the console, I have set up a basic infrastructure consisting of a VPC, some subnets, routing, and an instance. 
-
-I have enabled VPC flow logs to go into an S3 bucket, with default settings. 
-
-### Athena in the console
-
-Following the above documentation I have setup Athena with the following:
-	1.  I have created an S3 bucket for Athena query results.
-	2. Created a database with the SQL statement provided, and have set it up so that it can be partitioned by a date which will be provided in a later step. This SQL statement also makes sure Athena queries will use the bucket containing the VPC flow logs.
-	3. With a second SQL statement, I have created a partition of the previous database for a specified date. 
-	4. In the Athena console one can directly write SQL statements to query results from the flow logs.
-
-### Athena in Terraform
-
-With Terraform I was able to 
-
- - Deploy an Athena database
- - Deploy a named query that contains the SQL statement to create the table for Athena
- - Deploy a named query that contains the SQL statement to create the partition for a certain day.
-
-### Personal thoughts and questions
-
-1. With Terraform, Athena can be set up, and some sample queries can be created.
-2. With the resources created with Terraform, what scripted approach would be appropriate for the queries to be run? 
-3. Console vs Terraform - how much would the Athena Console be used, if at all?
+- **scripts/quicksight.py:** WIP, a script that will create a dashboard in Quicksight for a given Athena table.
