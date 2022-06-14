@@ -23,7 +23,7 @@ class StringBuilder:
     def __str__(self):
         return self.string.getvalue()
     
-flow_log_format = {
+log_format_lookup = {
     "account_id"            : "string",
     "action"                : "string",
     "az_id"                 : "string",
@@ -55,6 +55,8 @@ flow_log_format = {
     "vpc_id"                : "string"
 }
 
+log_format = "`account_id` string, `action` string, `az_id` string, `bytes` bigint, `dstaddr` string, `dstport` int, `end` bigint, `flow_direction` string, `instance_id` string, `interface_id` string, `log_status` string, `packets` bigint, `pkt_src_aws_service` string, `pkt_dstaddr` string, `pkt_srcaddr` string, `protocol` bigint, `region` string, `srcaddr` string, `srcport` int, `start` bigint, `sublocation_id` string, `sublocation_type` string, `subnet_id` string, `tcp_flags` int, `traffic_path` int, `type` string, `version` int, `vpc_id` string"
+
 def createTable(table_name="vpc_flow_logs_6", flow_logs_bucket_location="s3://sapphire-vpc-flow-logs-834539731159/", query_output_bucket_location="s3://sapphire-vpc-flow-logs-athena-query-results-834539731159/", workgroup="primary"):
     
     client = boto3.client('athena')
@@ -62,7 +64,7 @@ def createTable(table_name="vpc_flow_logs_6", flow_logs_bucket_location="s3://sa
     query_str = StringBuilder()
     query_str.add("CREATE EXTERNAL TABLE IF NOT EXISTS ")
     query_str.add("`" + table_name + "`")
-    query_str.add(" ( `account_id` string, `action` string, `az_id` string, `bytes` bigint, `dstaddr` string, `dstport` int, `end` bigint, `flow_direction` string, `instance_id` string, `interface_id` string, `log_status` string, `packets` bigint, `pkt_dst_aws_service` string, `pkt_dstaddr` string, `pkt_src_aws_service` string, `pkt_srcaddr` string, `protocol` bigint, `region` string, `srcaddr` string, `srcport` int, `start` bigint, `sublocation_id` string, `sublocation_type` string, `subnet_id` string, `tcp_flags` int, `traffic_path` int, `type` string, `version` int, `vpc_id` string  ) \n")
+    query_str.add(" ( " + log_format + " )\n")
     query_str.add("PARTITIONED BY (`date` date)\n")
     query_str.add("ROW FORMAT DELIMITED\n")
     query_str.add("FIELDS TERMINATED BY ' '\n")
