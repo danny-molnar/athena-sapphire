@@ -213,6 +213,33 @@ def runOnPremConnectionCheckQuery(table_name, date, query_output_bucket_location
     )
     print(response)
     
+def inboundConnectionsQuery(table_name, date, query_output_bucket_location="s3://sapphire-vpc-flow-logs-athena-query-results-834539731159/", workgroup="primary"):
+        
+    client = boto3.client('athena')
+    
+    query_str = StringBuilder()
+    query_str.add("SELECT srcaddr, action FROM ")
+    query_str.add(table_name)
+    query_str.add(" WHERE date = DATE('")
+    query_str.add(date)
+    query_str.add("') AND action = 'REJECT';")
+
+    response = client.start_query_execution(
+        
+        QueryString=str(query_str),
+    
+        # if the below block is commented out, the table will be created in the default db...
+        # QueryExecutionContext={
+        #     'Database': 'wbc'
+        # },
+        
+        ResultConfiguration={
+            'OutputLocation': query_output_bucket_location,
+        },
+        WorkGroup=workgroup
+    )
+    print(response)
+    
 def main(account_id, date, region, table):
     client = boto3.client('athena')
     
