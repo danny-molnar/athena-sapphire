@@ -1,0 +1,31 @@
+{
+    "FlowLogs": [
+        {
+            "CreationTime": "2022-05-17T13:54:40.303000+00:00",
+            "DeliverLogsStatus": "SUCCESS",
+            "FlowLogId": "fl-09069f39fe3e5beec",
+            "FlowLogStatus": "ACTIVE",
+            "ResourceId": "vpc-0dbee126f7143e296",
+            "TrafficType": "ALL",
+            "LogDestinationType": "s3",
+            "LogDestination": "arn:aws:s3:::sapphire-vpc-flow-logs",
+            "LogFormat": "${account-id} ${action} ${az-id} ${bytes} ${dstaddr} ${dstport} ${end} ${flow-direction} ${instance-id} ${interface-id} ${log-status} ${packets} ${pkt-src-aws-service} ${pkt-dstaddr} ${pkt-srcaddr} ${protocol} ${region} ${srcaddr} ${srcport} ${start} ${sublocation-id} ${sublocation-type} ${subnet-id} ${tcp-flags} ${traffic-path} ${type} ${version} ${vpc-id}",
+            "Tags": [
+                {
+                    "Key": "map-migrated",
+                    "Value": "d-server-03vf4jjv87jwou"
+                },
+                {
+                    "Key": "managed_by",
+                    "Value": "AFT"
+                }
+            ],
+            "MaxAggregationInterval": 600,
+            "DestinationOptions": {
+                "FileFormat": "plain-text",
+                "HiveCompatiblePartitions": false,
+                "PerHourPartition": false
+            }
+        }
+    ]
+}
