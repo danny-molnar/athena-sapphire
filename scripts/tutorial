@@ -7,3 +7,5 @@ This file list the steps to be taken to use the various scrips in this folder:
 5. Run the query scripts as needed:
 - query_all_fields.py
 - query_onprem_connectivity.py
+- query_rejected_packets.py
+
