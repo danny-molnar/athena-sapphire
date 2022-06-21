@@ -29,7 +29,7 @@ def runOnPremConnectionCheckQuery(table_name, date, query_output_bucket_location
     query_str.add(table_name)
     query_str.add(" WHERE date = DATE('")
     query_str.add(date)
-    query_str.add("')")
+    query_str.add("') AND srcaddr LIKE '172.%'")
 
     response = client.start_query_execution(
         
