@@ -24,7 +24,7 @@ def runRejectedPacketsQuery(table_name, date, query_output_bucket_location, work
     client = boto3.client('athena')
     
     query_str = StringBuilder()
-    query_str.add("SELECT flow_direction, srcaddr, action FROM ")
+    query_str.add("SELECT ROW_NUMBER() OVER() AS num, flow_direction, srcaddr, action FROM ")
     query_str.add(table_name)
     query_str.add(" WHERE date = DATE('")
     query_str.add(date)

@@ -26,7 +26,7 @@ def runQueryForAllFields(table_name, date, query_output_bucket_location, workgro
     client = boto3.client('athena')
     
     query_str = StringBuilder()
-    query_str.add("SELECT * FROM ")
+    query_str.add("SELECT ROW_NUMBER() OVER() AS num, * FROM ")
     query_str.add(table_name)
     query_str.add(" WHERE date = DATE('")
     query_str.add(date)

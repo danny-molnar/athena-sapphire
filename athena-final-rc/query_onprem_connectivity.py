@@ -25,7 +25,7 @@ def runOnPremConnectionCheckQuery(table_name, date, query_output_bucket_location
     client = boto3.client('athena')
     
     query_str = StringBuilder()
-    query_str.add("SELECT flow_direction, srcaddr, dstaddr FROM ")
+    query_str.add("SELECT ROW_NUMBER() OVER() AS num, flow_direction, srcaddr, dstaddr FROM ")
     query_str.add(table_name)
     query_str.add(" WHERE date = DATE('")
     query_str.add(date)
