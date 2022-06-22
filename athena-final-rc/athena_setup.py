@@ -105,6 +105,8 @@ def main(account_id, date, region, table):
     createTable(table, flow_logs_bucket, query_output_bucket)
     createPartition(table, account_id, region, date, flow_logs_bucket, query_output_bucket)
     
+    athenaDate = date
+    
 def parser():
     parser = argparse.ArgumentParser(description=['Parsing arguments'])
     parser.add_argument('-a','--account-id', help='Target account id', nargs='?', dest="account_id")
