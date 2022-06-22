@@ -25,11 +25,12 @@ def runOnPremConnectionCheckQuery(table_name, date, query_output_bucket_location
     client = boto3.client('athena')
     
     query_str = StringBuilder()
-    query_str.add("SELECT account_id, flow_direction, srcaddr FROM ")
+    query_str.add("SELECT flow_direction, srcaddr, dstaddr FROM ")
     query_str.add(table_name)
     query_str.add(" WHERE date = DATE('")
     query_str.add(date)
-    query_str.add("') AND srcaddr LIKE '172.16%' OR srcaddr LIKE '172.28%'")
+    query_str.add("') AND flow_direction = 'ingress'")
+    #query_str.add("AND srcaddr LIKE '172.16%' OR srcaddr LIKE '172.28%'")
 
     response = client.start_query_execution(
         
